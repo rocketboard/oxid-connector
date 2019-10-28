@@ -61,6 +61,16 @@ class Rocketboard extends FrontendController
     public function render()
     {
         $oConfig = Registry::getConfig();
+        $token = $oConfig->getShopConfVar('rocketToken');
+        $reqToken = $oConfig->getRequestParameter('rocketToken');
+        if ($token) {
+            if (!$reqToken || $reqToken != $token) {
+                die("Configuration token does not match parameter 'rocketToken'!");
+            }
+        } else {
+            die("Please set a token in the configuration!");
+        }
+
         $this->utils = Registry::getUtils();
         $this->oDb = DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC);
         $what = $oConfig->getRequestParameter('what');
@@ -74,16 +84,6 @@ class Rocketboard extends FrontendController
                 break;
             default:
                 $data = $this->getAppInfo($what);
-        }
-
-        $token = $oConfig->getShopConfVar('rocketToken');
-        $reqToken = $oConfig->getRequestParameter('rocketToken');
-        if ($token) {
-            if (!$reqToken || $reqToken != $token) {
-                die("Configuration token does not match parameter 'rocketToken'!");
-            }
-        } else {
-            die("Please set a token in the configuration!");
         }
 
         array_walk_recursive($data, function (&$value) {
